@@ -1,0 +1,15 @@
+output/
+.idea/
+*.iml
+target/
+output/
+*~
+test-output/
+logs/
+archive/
+.DS_Store
+.classpath
+.settings
+.project
+bin
+nbactions.xml
