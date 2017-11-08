@@ -1,4 +1,0 @@
-[error] /home/mark/projects/SHMsoft/DocParser/project/Dependencies.scala:16:77: ';' expected but ',' found.
-[error]   lazy val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.5.3",
-[error]                                                                             ^
-[error] one error found

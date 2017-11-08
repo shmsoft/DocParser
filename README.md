@@ -1,5 +1,8 @@
-# CourtDocs
+# DocParser
 
+* This project has started its life as a Java project and
+    was converted to a Scala one
+    
 ## Capabilities
 
 #### Pulling data from California rehab institutions
@@ -25,5 +28,4 @@ The (hopefully) latest results of processing, extracted with this CourtDoc regex
 * For development I prefer IntelliJ.
     * It allows multiple configurations for running and debugging
     * Overall better, I can't say where NetBeans would exceed IntelliJ, except in the UI editor
-    * This project has started its life as a Java project and
-    was converted to a Scala one
+    

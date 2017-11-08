@@ -1,6 +1,7 @@
 output/
 .idea/
 *.iml
+project/target/
 target/
 output/
 *~
