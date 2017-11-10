@@ -20,8 +20,5 @@ Based on the inputs, we want to classify every appeal into a group with the
 
 We may use 
 
-* word2vec, 
-* paragraphvectors, 
+* word2vec
 * or any other method to achieve the desired classification
-
-I (Mark) believe that we need much more investigation as to what we want.

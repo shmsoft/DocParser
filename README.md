@@ -11,7 +11,6 @@
 
 To run the application(s), look into the 'scripts' folder
 
-
 Please note that all software documentation is found in the 'doc' folder in this project
 
 ## Data
