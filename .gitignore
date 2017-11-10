@@ -5,7 +5,7 @@ project/target/
 target/
 output/
 *~
-test-output/
+output/
 logs/
 archive/
 .DS_Store

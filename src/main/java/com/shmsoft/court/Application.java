@@ -21,16 +21,18 @@ import java.util.Map;
 
 public class Application {
 
-    private static final Logger logger = LoggerFactory.getLogger(Application.class);
+    private static final Logger logger =
+        LoggerFactory.getLogger(Application.class);
 
     private static Options options;
     private String inputDir;
-    private String outputFile;
+    private String outputDir;
     private String parserType;
     private boolean rawMode;
     private String gateHome;
     private int breakSize = 10000;
     private int sample;
+    private String outputFileName = "parsed";
 
     public static void main(String[] args) {
         Application application = new Application();
@@ -41,7 +43,9 @@ public class Application {
         formOptions();
         HelpFormatter formatter = new HelpFormatter();
         if (args.length == 0) {
-            formatter.printHelp("NYAppealParse - extract legal information from court cases", options);
+            formatter.printHelp(
+                "NYAppealParse - extract legal information from court cases",
+                options);
             return;
         }
         try {
@@ -52,9 +56,12 @@ public class Application {
                 doSampling();
                 return;
             }
-            if (parserType.equals(GATEParser.PARSER_TYPE) || parserType.equalsIgnoreCase(IParser.BOTH)) {
+            if (parserType.equals(GATEParser.PARSER_TYPE) || parserType
+                .equalsIgnoreCase(IParser.BOTH)) {
                 if (StringUtils.isEmpty(gateHome)) {
-                    formatter.printHelp("When GATE parser is used, gate-home parameter must be specified", options);
+                    formatter.printHelp(
+                        "When GATE parser is used, gate-home parameter must be specified",
+                        options);
                     return;
                 }
             }
@@ -67,26 +74,29 @@ public class Application {
                 parser = new GATEParser(gateHome);
             } else if (parserType.equalsIgnoreCase(IParser.BOTH)) {
                 IParser textParser = new TextParser();
-                System.out.println("Using parser " + textParser.getClass().getSimpleName());
+                System.out.println(
+                    "Using parser " + textParser.getClass().getSimpleName());
                 parseAll(textParser);
                 System.out.println(textParser.getStats().toString());
 
                 IParser gateParser = new GATEParser(gateHome);
-                System.out.println("Using parser " + gateParser.getClass().getSimpleName());
+                System.out.println(
+                    "Using parser " + gateParser.getClass().getSimpleName());
                 parseAll(gateParser);
                 System.out.println(gateParser.getStats().toString());
-
             } else {
-                logger.info("Unrecognized parser type " + parserType + ", using NYAppealParse.");
+                logger.info("Unrecognized parser type " + parserType
+                    + ", using NYAppealParse.");
                 parser = new TextParser();
             }
             if (!parserType.equalsIgnoreCase(IParser.BOTH)) {
-                System.out.println("Using parser " + parser.getClass().getSimpleName());
+                System.out.println(
+                    "Using parser " + parser.getClass().getSimpleName());
                 parseAll(parser);
                 System.out.println(parser.getStats().toString());
             }
             System.out.println("Input dir: " + inputDir);
-            System.out.println("Output dir: " + new File(outputFile).getParent());
+            System.out.println("Output dir: " + outputDir);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,20 +105,25 @@ public class Application {
     private static void formOptions() {
         options = new Options();
         options.addOption("i", "inputDir", true, "Input directory");
-        options.addOption("o", "outputFile", true, "Output file, .csv will be added");
+        options.addOption("o", "outputDir", true, "Output directory");
         options.addOption("b", "breakSize", true, "Output file size in lines");
-        options.addOption("p", "parser", true, "Parser type: 'text' by default, 'gate' or 'both'");
-        options.addOption("r", "raw", false, "Raw mode, debugging mode, will produce *_raw.txt");
-        options.addOption("g", "gate-home", true, "Path to GATE app directory (if using GATE parser)");
+        options.addOption("p", "parser", true,
+            "Parser type: 'text' by default, 'gate' or 'both'");
+        options.addOption("r", "raw", false,
+            "Raw mode, debugging mode, will produce *_raw.txt");
+        options.addOption("g", "gate-home", true,
+            "Path to GATE app directory (if using GATE parser)");
         // this is used to find representative cases
-        options.addOption("s", "sample", true, "Find top s criminal cases, by doc length");
+        options.addOption("s", "sample", true,
+            "Find top s criminal cases, by doc length");
     }
 
-    private boolean parseOptions(String[] args) throws org.apache.commons.cli.ParseException {
+    private boolean parseOptions(String[] args)
+        throws org.apache.commons.cli.ParseException {
         CommandLineParser parser = new GnuParser();
         CommandLine cmd = parser.parse(options, args);
         inputDir = cmd.getOptionValue("inputDir");
-        outputFile = cmd.getOptionValue("outputFile");
+        outputDir = cmd.getOptionValue("outputDir");
         parserType = cmd.getOptionValue("parser");
         if (parserType == null) {
             parserType = "text";
@@ -126,18 +141,25 @@ public class Application {
 
     public void parseAll(IParser parser) throws IOException {
         int lineCount = 0;
-        File[] files = new File(inputDir).listFiles();
+        File[] files;
+        if (new File(inputDir).isDirectory()) {
+            files = new File(inputDir).listFiles();
+        } else {
+            files = new File[1];
+            files[0] = new File(inputDir);
+        }
         Arrays.sort(files);
+        FileUtils.write(new File(
+            outputDir + "/" + outputFileName + parser.getStats()
+                .get(DataKey.FileNumber) + ".csv"), createHeader(), false);
         parser.getStats().set(DataKey.FiledInDir, files.length);
-        FileUtils.write(new File(outputFile + parser.getStats().get(DataKey.FileNumber) + ".csv"), createHeader(), false);
-
         for (File file : files) {
             if (files == null) {
                 logger.warn("No files found in input");
                 return;
             }
             try {
-                // right now, we analyze only "txt", and consider the rest as garbage
+                // right now, we analyze only "txt"
                 if (!file.getName().endsWith("txt")) {
                     continue;
                 }
@@ -154,15 +176,22 @@ public class Application {
                     if (answer.containsKey(key)) {
                         value = answer.get(key);
                     }
-                    buf.append(value).append(CommonConstants.CSV_FIELD_SEPARATOR);
+                    buf.append(value)
+                        .append(CommonConstants.CSV_FIELD_SEPARATOR);
                     raw_buffer.append(key.toString() + "=" + value + "\n");
                 }
                 raw_buffer.append("========\n");
                 buf.deleteCharAt(buf.length() - 1);
-                FileUtils.write(new File(outputFile + parser.getStats().get(DataKey.FileNumber) + ".csv"), "\"" + buf.toString() + "\"\n", true);
+                FileUtils.write(new File(
+                        outputDir + "/" + outputFileName + parser.getStats()
+                            .get(DataKey.FileNumber) + ".csv"),
+                    "\"" + buf.toString() + "\"\n", true);
                 if (rawMode) {
-                    FileUtils.write(new File(outputFile + parser.getStats().get(DataKey.FileNumber) + "_"
-                            + parser.getClass().getSimpleName().toLowerCase() + "_raw.txt"), raw_buffer.toString(), true);
+                    FileUtils.write(new File(
+                            outputDir + "/" + outputFileName + parser.getStats()
+                                .get(DataKey.FileNumber) + "_" + parser.getClass()
+                                .getSimpleName().toLowerCase() + "_raw.txt"),
+                        raw_buffer.toString(), true);
                 }
                 parser.getStats().inc(DataKey.Metadata);
                 ++lineCount;
@@ -171,8 +200,13 @@ public class Application {
                     parser.getStats().inc(DataKey.FileNumber);
                     lineCount = 1;
                     // create new file, append = false
-                    FileUtils.write(new File(outputFile + parser.getStats().get(DataKey.FileNumber) + ".csv"), createHeader(), false);
-                    System.out.println("Writing parsed file " + parser.getStats().get(DataKey.FileNumber));
+                    FileUtils.write(new File(
+                            outputDir + "/" + outputFileName + parser.getStats()
+                                .get(DataKey.FileNumber) + ".csv"), createHeader(),
+                        false);
+                    System.out.println(
+                        "Writing parsed file " + parser.getStats()
+                            .get(DataKey.FileNumber));
                 }
             } catch (Exception e) {
                 logger.error("Error processing file {} " + file.getName(), e);
@@ -194,10 +228,12 @@ public class Application {
             if (sampleCount >= sample) {
                 break;
             }
-            List<String> lines = Files.readLines(file, Charset.defaultCharset());
+            List<String> lines =
+                Files.readLines(file, Charset.defaultCharset());
             for (int l = 0; l < lines.size(); ++l) {
                 if (lines.get(l).contains("People v") && l < 5) {
-                    String outputFileName = "/home/mark/greg" + "/" + file.getName();
+                    String outputFileName =
+                        "/home/mark/greg" + "/" + file.getName();
                     Files.copy(file, new File(outputFileName));
                     ++sampleCount;
                     break;
@@ -208,7 +244,8 @@ public class Application {
 
     private void cleanupFirst() {
         try {
-            File[] files = new File(outputFile).getParentFile().listFiles();
+            new File(outputDir).mkdirs();
+            File[] files = new File(outputDir).listFiles();
             for (File file : files) {
                 if (file.getName().endsWith("csv")) {
                     file.delete();

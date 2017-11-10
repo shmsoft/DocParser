@@ -1,13 +1,6 @@
 package com.shmsoft.court.parser;
 
 public enum DataKey {
-
-
-//	public int docs;
-//    public int filesInDir;
-//    public int metadata;
-//    public int fileNumber = 0;
-//    
 	 File,
 	 Docs(false),
 	 FiledInDir(false),

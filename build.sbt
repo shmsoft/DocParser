@@ -8,24 +8,24 @@ lazy val root = (project in file(".")).
       scalaVersion := "2.12.3",
       version := "0.1.0-SNAPSHOT"
     )),
-    name := "Hello",
+    name := "DocParser",
     libraryDependencies += scalaTest % Test,
     libraryDependencies += hamcrest,
     libraryDependencies += apacheCommons,
-    libraryDependencies += slf4j,
     libraryDependencies += guava,
     libraryDependencies += gate,
     libraryDependencies += httpclient,
     libraryDependencies += mongodb,
     libraryDependencies += jsoup,
-    libraryDependencies += slf4,
     libraryDependencies += commonscli,
     libraryDependencies += javaxservlet,
     libraryDependencies += lucenecore,
     libraryDependencies += luceneanalysis,
     libraryDependencies += lucenequery,
     libraryDependencies += lucenememory,
-    libraryDependencies += jetty
+    libraryDependencies += jetty,
+    libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5",
+      "org.slf4j" % "slf4j-simple" % "1.7.5")
   )
 
 

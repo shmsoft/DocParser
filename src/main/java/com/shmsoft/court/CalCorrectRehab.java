@@ -69,7 +69,7 @@ public class CalCorrectRehab {
 
     private static void formOptions() {
         options = new Options();
-        options.addOption("o", "output", true, "Output file");
+        options.addOption("o", "output", true, "Output dir");
         options.addOption("l", "limit", true, "Limit how many PDF to process (for testing)");
         options.addOption("z", "zipThrough", false, "Zip through the input web site but don't download or analyze PDF's");
     }
