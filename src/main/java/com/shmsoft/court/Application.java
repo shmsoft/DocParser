@@ -33,6 +33,8 @@ public class Application {
     private int breakSize = 10000;
     private int sample;
     private String outputFileName = "parsed";
+    private int progressCountFiles = 1000;
+    private int progressCount = 0;
 
     public static void main(String[] args) {
         Application application = new Application();
@@ -153,6 +155,7 @@ public class Application {
             outputDir + "/" + outputFileName + parser.getStats()
                 .get(DataKey.FileNumber) + ".csv"), createHeader(), false);
         parser.getStats().set(DataKey.FiledInDir, files.length);
+        progressCount = 0;
         for (File file : files) {
             if (files == null) {
                 logger.warn("No files found in input");
@@ -162,6 +165,10 @@ public class Application {
                 // right now, we analyze only "txt"
                 if (!file.getName().endsWith("txt")) {
                     continue;
+                }
+                ++progressCount;
+                if (progressCount % progressCountFiles == 0) {
+                    logger.info("Progress: {} files {}", progressCount, "**********************************************");
                 }
                 parser.getStats().inc(DataKey.Docs);
                 StringBuffer buf = new StringBuffer();

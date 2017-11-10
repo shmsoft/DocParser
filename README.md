@@ -9,7 +9,13 @@
 * Parsing the docs, to summarize for stats.
 #### Parsing the text appeal documents, producing a csv file with extracted attributes
 
-To run the application(s), look into the 'scripts' folder
+# How to run
+
+To run, enter sbt. Once inside of sbt, do this
+
+    sbt> run <your parameters>
+
+It will ask you which application to run, and pass your parameters to it
 
 Please note that all software documentation is found in the 'doc' folder in this project
 
