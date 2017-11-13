@@ -2,6 +2,7 @@ output/
 .idea/
 *.iml
 project/target/
+lib_managed/
 target/
 output/
 *~

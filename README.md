@@ -11,11 +11,18 @@
 
 # How to run
 
+## with sbt
+
 To run, enter sbt. Once inside of sbt, do this
 
     sbt> run <your parameters>
 
 It will ask you which application to run, and pass your parameters to it
+
+# from compiled app
+
+    sbt package
+    scale - cp 
 
 Please note that all software documentation is found in the 'doc' folder in this project
 
@@ -43,5 +50,16 @@ The (hopefully) latest results of processing, extracted with this CourtDoc regex
 #### Pulling data from California rehab institutions
 
 (Kept as archive, probably to be removed)
+
+## Useful Scala info
+
+For packaging
+
+[package plugin](https://github.com/sbt/sbt-native-packager)
+[export Intellij configuration for sharing (by saving them in .idea in git)]
+
+(https://intellij-support.jetbrains.com/hc/en-us/community/posts/206600965-Export-Import-Run-Configurations-)
+
+
 
     

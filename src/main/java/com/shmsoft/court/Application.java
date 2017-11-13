@@ -14,10 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Application {
 
@@ -79,13 +76,13 @@ public class Application {
                 System.out.println(
                     "Using parser " + textParser.getClass().getSimpleName());
                 parseAll(textParser);
-                System.out.println(textParser.getStats().toString());
+                writeStats(textParser);
 
                 IParser gateParser = new GATEParser(gateHome);
                 System.out.println(
                     "Using parser " + gateParser.getClass().getSimpleName());
                 parseAll(gateParser);
-                System.out.println(gateParser.getStats().toString());
+                writeStats(gateParser);
             } else {
                 logger.info("Unrecognized parser type " + parserType
                     + ", using NYAppealParse.");
@@ -95,7 +92,7 @@ public class Application {
                 System.out.println(
                     "Using parser " + parser.getClass().getSimpleName());
                 parseAll(parser);
-                System.out.println(parser.getStats().toString());
+                writeStats(parser);
             }
             System.out.println("Input dir: " + inputDir);
             System.out.println("Output dir: " + outputDir);
@@ -279,5 +276,8 @@ public class Application {
         buf.append("\n");
         return buf.toString();
     }
-
+    private void writeStats(IParser textParser) {
+        System.out.println(textParser.getStats().toString());
+        logger.info(textParser.getStats().toString());
+    }
 }
