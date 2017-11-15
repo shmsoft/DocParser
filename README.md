@@ -19,11 +19,6 @@ To run, enter sbt. Once inside of sbt, do this
 
 It will ask you which application to run, and pass your parameters to it
 
-# from compiled app
-
-    sbt package
-    scale - cp 
-
 Please note that all software documentation is found in the 'doc' folder in this project
 
 ## Data

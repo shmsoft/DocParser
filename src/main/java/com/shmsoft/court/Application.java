@@ -279,5 +279,14 @@ public class Application {
     private void writeStats(IParser textParser) {
         System.out.println(textParser.getStats().toString());
         logger.info(textParser.getStats().toString());
+        String recordForPosterity = textParser.getStats().toString() +
+            "\n" + "Input dir: " + inputDir +
+            "\n" + new Date() + "\n\n";
+        try {
+            FileUtils.write(new File(outputDir + "/parse-stats.log"),
+                recordForPosterity, true);
+        } catch (IOException e) {
+            logger.error("Can't save stats", e);
+        }
     }
 }
