@@ -1,6 +1,7 @@
 package com.shmsoft.court.parser;
 
 import com.shmsoft.court.CommonConstants;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,12 +148,12 @@ public class TextParser implements IParser {
     }
 
     public Map<DataKey, String> parseFile(File file) throws IOException {
+        Map<DataKey, String> info = new HashMap<>();
         String text = FileUtils.readFileToString(file);
+        String md5Hex = DigestUtils.md5Hex(text);
+        info.put(DataKey.Hash, md5Hex);
         text = text.replaceAll("" + CommonConstants.CSV_FIELD_SEPARATOR, "");
         String textFlow = text.replaceAll("\\r\\n|\\r|\\n", " ");
-
-        //System.out.println("Text flow: " + textFlow);
-        Map<DataKey, String> info = new HashMap<>();
         // there are so many exceptions that 'case' is preferable to a generic loops with exceptions
         Matcher m;
         String value = "";
@@ -221,21 +222,11 @@ public class TextParser implements IParser {
                     }
                     continue;
 
-                    //                case SexOffender:
-                    //                    info.put(KEYS.SexOffender.toString(), sexOffender? "Y" : "");
-                    //                    if (sexOffender) {
-                    //                        ++stats.sexOffence;
-                    //                    }
-                    //                    continue;
-
                 case DocumentLength:
                     info.put(DataKey.DocumentLength, Integer.toString(text.length()));
                     continue;
                 case Court:
                     value = "";
-                    //  regex = "(Supreme Court)|(County Court)|(Court of Claims)|(Family Court)|" +
-                    //          "(Workers' Compensation Board)|(Division of Human Rights)|" +
-                    //          "(Unemployment Insurance Appeal Board)|(Department of Motor Vehicles)";
                     m = COURT_1_PATTERN.matcher(text);
                     if (m.find()) {
                         value = m.group();
@@ -259,8 +250,6 @@ public class TextParser implements IParser {
                     }
                     continue;
                 case County:
-                    value = "";
-                    //regex = "[a-zA-Z]+\\sCounty";
                     m = COUNTRY_PATTERN.matcher(text);
                     if (m.find()) {
                         value = sanitize(m.group());
@@ -311,8 +300,6 @@ public class TextParser implements IParser {
                     value = "";
                     List<String> sentences = NYAppealUtil.splitToSentences(textFlow);
                     for (String sentence : sentences) {
-                        //regex = "(rendered|entered|dated|filed) " + months + " [0-9]+?, 2[0-1][0-9][0-9]";
-                        //Judgment, Supreme Court, Bronx County (William Mogulescu, J.), rendered on or about October 26, 2007, unanimously affirmed.
                         m = FIRST_DATE_PATTERN.matcher(sentence);
                         if (m.find()) {
                             value = m.group(3) + " " + m.group(4);
@@ -359,7 +346,6 @@ public class TextParser implements IParser {
                     if (!criminal)
                         continue;
                     value = "";
-                    //regex = "plea\\s*of\\s*guilty|jury\\s*verdict|nonjury\\s*trial";
                     m = CONVICTION_PATTERN.matcher(text);
                     if (m.find()) {
                         value = sanitize(m.group());
@@ -374,26 +360,6 @@ public class TextParser implements IParser {
                     continue;
 
                 case Crimes:
-                    //                	 if (criminal && info.containsKey(KEYS.ModeOfConviction.toString())) {
-                    //                         String mode = info.get(KEYS.ModeOfConviction.toString());
-                    //                         // crime is from here till the end of the line
-                    //                         value = "";
-                    //                         int crimeStart = text.indexOf(mode);
-                    //                         if (crimeStart > 0) {
-                    //                             crimeStart += mode.length();
-                    //                             int comma = text.indexOf("\n", crimeStart);
-                    //                             if (comma > 0 && (comma - crimeStart < 5)) crimeStart += (comma - crimeStart + 1);
-                    //                             int crimeEnd = text.indexOf(".", crimeStart);
-                    //                             if (crimeEnd > 0) {
-                    //                                 value = text.substring(crimeStart, crimeEnd);
-                    //                                 value = sanitize(value);
-                    //                                 info.put(KEYS.Crimes.toString(), value);
-                    //                                 ++stats.crimes;
-                    //                             }
-                    //                         }
-                    //                         if (value.isEmpty() && sexOffender) {
-                    //                         }
-                    //                     }
                     if (criminal) {
                         m = CRIMES_PATTERN_1.matcher(textFlow);
                         if (m.find()) {
@@ -466,26 +432,6 @@ public class TextParser implements IParser {
                 case DefendantAppellant:
                     ;
                     m = DEFENDANT_APPELLANT_PATTERN.matcher(text);
-                    //                    if (m.find()) {
-                    //                        value = m.group();
-                    //                        if (value.equals(DEF_APP)) {
-                    //                            // take the previous line
-                    //                            int defAppIndex = text.indexOf(DEF_APP);
-                    //                            printAround(text, defAppIndex);
-                    //                            if (defAppIndex >= 0) {
-                    //                                int indexBefore = text.lastIndexOf("\n", defAppIndex);
-                    //                                printAround(text, indexBefore);
-                    //                                if (indexBefore > 0) {
-                    //                                    int indexBeforeBefore = text.lastIndexOf("\n", indexBefore - 1);
-                    //                                    if (indexBeforeBefore >= 0) {
-                    //                                        value = text.substring(indexBeforeBefore, indexBefore);
-                    //                                        printAround(text, indexBeforeBefore);
-                    //                                    }
-                    //                                }
-                    //                            }
-                    //                         }
-                    //                        info.put(key.toString(), sanitize(value));
-                    //                    }
                     if (m.find()) {
                         info.put(key, "1");
                     } else {
@@ -558,7 +504,6 @@ public class TextParser implements IParser {
                     continue;
 
                 case ProsecutMisconduct:
-                    //regex = "prosecut[a-zA-Z\\s]*misconduct";
                     m = PROSECUTOR_MISCONDUCT_PATTERN.matcher(text);
                     if (m.find()) {
                         info.put(key, sanitize(m.group()));
@@ -571,11 +516,14 @@ public class TextParser implements IParser {
                     if (!value.trim().isEmpty())
                         stats.inc(DataKey.Justice);
                     continue;
+                case Hash:
+                    // Done at the very beginning
+                    continue;
 
                 default:
                     if (key.isOutputToFile()) {
                         logger.error(
-                                "Aren't you forgetting something, Mr.? How about {} field?",
+                                "Aren't you forgetting something, Mister? How about the {} field?",
                                 key.toString());
                     }
 
@@ -617,38 +565,6 @@ public class TextParser implements IParser {
         if (gapParsed) {
             stats.inc(DataKey.Gap_days);
         }
-        //        if (info.containsKey(KEYS.DefendantAppellant.toString())) {
-        //            // the answer is in the previous line
-        //            value = info.get(KEYS.DefendantAppellant.toString());
-        //            int valueInd = text.indexOf(value);
-        //            if (valueInd > 0) {
-        //                int endLine = text.lastIndexOf("\n", valueInd);
-        //                if (endLine > 0) {
-        //                    int startLine = text.lastIndexOf("\n", endLine - 1);
-        //                    if (startLine > 0) {
-        //                        value = text.substring(startLine + 1, endLine);
-        //                        value = sanitize(value);
-        //                        info.put(KEYS.DefendantAppellant.toString(), value);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        if (info.containsKey(KEYS.DefendantRespondent.toString())) {
-        //            // the answer is in the previous line
-        //            value = info.get(KEYS.DefendantRespondent.toString());
-        //            int valueInd = text.indexOf(value);
-        //            if (valueInd > 0) {
-        //                int endLine = text.lastIndexOf("\n", valueInd);
-        //                if (endLine > 0) {
-        //                    int startLine = text.lastIndexOf("\n", endLine - 1);
-        //                    if (startLine > 0) {
-        //                        value = text.substring(startLine + 1, endLine);
-        //                        value = sanitize(value);
-        //                        info.put(KEYS.DefendantRespondent.toString(), value);
-        //                    }
-        //                }
-        //            }
-        //        }
         return info;
     }
 

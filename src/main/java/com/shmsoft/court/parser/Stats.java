@@ -74,7 +74,8 @@ public class Stats {
                         "Keywords: " + ratio(get(DataKey.Keywords), get(DataKey.FiledInDir)) + "%\n" +
                         "Interest of justice: " + ratio(get(DataKey.Justice), get(DataKey.FiledInDir)) + "%\n" +
                         "Number of output files: " + (get(DataKey.FileNumber) + 1) + "\n" +
-                        "Runtime: " + ((new Date().getTime() - startDate.getTime()) / 1000 + " seconds");
+                        "Runtime: " + ((new Date().getTime() - startDate.getTime()) / 1000 + " seconds") + "%\n" +
+                        "Milliseconds per file: " + ((new Date().getTime() - startDate.getTime()) / get(DataKey.FiledInDir));
     }
 
     private String success(int problems, int total) {

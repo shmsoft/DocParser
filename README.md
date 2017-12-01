@@ -16,12 +16,28 @@
 To run, enter sbt. Once inside of sbt, do this
 
     sbt> run <your parameters>
+    
+On 'run' choice, chose '1' for Application
+    
+Parameters example
 
+For all data
+
+    -i ../Greg_Data/NY_Court_All -o  ../Greg_Data/NY_Court_All_Parsed
+
+For a small test
+
+    -i test-data/ny-appeals -o output
+    
 It will ask you which application to run, and pass your parameters to it
 
 Please note that all software documentation is found in the 'doc' folder in this project
 
 ## Data
+
+All input
+
+../Greg_Data/NY_Court_All
 
 Location on Google Drive:
 
