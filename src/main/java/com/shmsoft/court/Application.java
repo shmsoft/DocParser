@@ -189,7 +189,7 @@ public class Application {
                 FileUtils.write(new File(
                         outputDir + "/" + outputFileName + parser.getStats()
                             .get(DataKey.FileNumber) + ".csv"),
-                    "\"" + buf.toString() + "\"\n", true);
+                    buf.toString() + "\n", true);
                 if (rawMode) {
                     FileUtils.write(new File(
                             outputDir + "/" + outputFileName + parser.getStats()
