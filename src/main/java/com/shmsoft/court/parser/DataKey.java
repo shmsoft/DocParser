@@ -33,7 +33,8 @@ public enum DataKey {
      Civil (false),
      DistrictAttorneyProblem (false),
      Justice,
-     Hash;
+     Hash,
+     DefendantORAppellant;
      
      
      private boolean outputToFile;
