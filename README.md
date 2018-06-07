@@ -1,3 +1,5 @@
+# This project is NOT IN USE and will be deleted soon
+
 # DocParser
 
 * This project has started its life as a Java project and was converted to a Scala one
